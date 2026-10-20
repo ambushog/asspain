@@ -1,0 +1,19 @@
+:root{--bg:#0a0a0a;--alt:#141414;--tx:#F4F0EA;--mu:#999691;--red:#C32525;--gold:#D4A853;--bd:rgba(255,255,255,.15)}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--tx);font:300 1rem/1.8 'Montserrat',sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
+.top{position:sticky;top:0;z-index:9;display:flex;align-items:center;gap:1rem;padding:0 1.2rem;height:56px;background:rgba(10,10,10,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--bd)}
+.brand{display:flex;align-items:center;gap:.6rem;color:var(--tx);font-family:'Playfair Display',serif;font-size:1.1rem}.brand:hover{text-decoration:none}
+.top nav{display:flex;gap:1.2rem;margin-left:auto;align-items:center;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}.top nav a{color:var(--mu)}.top nav a:hover{color:var(--tx);text-decoration:none}
+.top nav .cta{background:var(--red);color:#fff;padding:.5rem .9rem;border-radius:2px}
+#lang-select{background:var(--alt);color:var(--tx);border:1px solid var(--bd);padding:.4rem .5rem;font:inherit;font-size:.75rem;max-width:130px}
+main{max-width:820px;margin:0 auto;padding:4rem 1.4rem 3rem}
+.crumbs{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-bottom:2rem}
+h1,h2{font-family:'Playfair Display',serif;font-weight:400;line-height:1.2}h1{font-size:clamp(2.2rem,6vw,3.8rem);margin-bottom:1.2rem}
+h2{font-size:1.6rem;margin:2.6rem 0 .8rem;color:var(--tx)}.lead{font-size:1.15rem;color:var(--tx);border-left:2px solid var(--red);padding-left:1.1rem;margin-bottom:1rem}
+p,li{color:#d6d2cb;margin-bottom:1rem}ul{padding-left:1.2rem}strong{font-weight:500;color:var(--tx)}
+details{border-top:1px solid var(--bd);padding:.9rem 0}summary{cursor:pointer;color:var(--tx)}details p{margin:.6rem 0 0}
+.rel{display:flex;flex-wrap:wrap;gap:.7rem}.rel a{border:1px solid var(--bd);padding:.6rem 1rem;font-size:.85rem}.rel a:hover{border-color:var(--gold);text-decoration:none}
+footer{border-top:1px solid var(--bd);background:var(--alt);padding:2.5rem 1.4rem;text-align:center}
+.fl{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem 1.4rem;font-size:.78rem}.copy{color:var(--mu);font-size:.72rem;margin-top:1.4rem}
+@media(max-width:760px){.top nav a:not(.cta){display:none}.top nav{margin-left:auto}}
+html[dir=rtl] .lead{border-left:0;border-right:2px solid var(--red);padding-left:0;padding-right:1.1rem}

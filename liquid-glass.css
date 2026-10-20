@@ -1,0 +1,626 @@
+/* =====================================================================
+   LIQUID GLASS  —  Amrik Singh Spain
+   Not frosted glass. Liquid glass is clear, it bends what is behind it
+   (refraction at the bezel), catches light on its rim (specular edge),
+   and reacts to touch (squish + moving highlight).
+
+   Layers, per surface:
+     1. refraction   backdrop-filter: url(#lg-n)   (built by liquid-glass.js, Chromium)
+                     falls back to a light blur + saturation lift elsewhere
+     2. body         faint diagonal sheen + tint (never an opaque fill)
+     3. rim          inset specular lines + conic edge light that follows the pointer
+     4. depth        soft drop shadow, inner glow, bottom caustic
+   ===================================================================== */
+
+@property --lg-a { syntax: '<angle>'; inherits: false; initial-value: 135deg; }
+
+:root {
+    --lg-r: 28px;
+
+    /* backdrop treatment. JS overrides this per element with url(#lg-n) ... */
+    --lg-bf: blur(1.5px) saturate(1.9) brightness(1.1);
+    --lg-bf-soft: blur(10px) saturate(1.7) brightness(1.05);
+    --lg-bf-modal: blur(26px) saturate(1.6) brightness(1.04);
+
+    /* body */
+    --lg-sheen: linear-gradient(135deg,
+        rgba(255,255,255,.17) 0%,
+        rgba(255,255,255,.05) 36%,
+        rgba(255,255,255,.02) 62%,
+        rgba(255,255,255,.12) 100%);
+    --lg-tint: rgba(255,255,255,.035);
+    --lg-tint-dark: rgba(10,10,16,.34);
+
+    /* edge + depth */
+    --lg-edge:
+        inset 0 1px 0 rgba(255,255,255,.62),
+        inset 0 -1px 0 rgba(255,255,255,.14),
+        inset 1px 0 0 rgba(255,255,255,.2),
+        inset -1px 0 0 rgba(255,255,255,.08),
+        inset 0 0 26px rgba(255,255,255,.07),
+        inset 0 -18px 28px -22px rgba(255,255,255,.38);
+    --lg-drop: 0 24px 56px -14px rgba(0,0,0,.62), 0 3px 10px rgba(0,0,0,.35);
+    --lg-drop-sm: 0 10px 24px -8px rgba(0,0,0,.55), 0 2px 5px rgba(0,0,0,.3);
+
+    /* colour for glass to bend: turban indigo, sweater saffron, seva crimson */
+    --lg-indigo: 66, 62, 176;
+    --lg-saffron: 232, 150, 40;
+    --lg-crimson: 195, 37, 37;
+    --lg-orbs-a:
+        radial-gradient(56vmax 40vmax at 14% 22%, rgba(var(--lg-indigo), .78), transparent 64%),
+        radial-gradient(46vmax 34vmax at 88% 46%, rgba(var(--lg-saffron), .50), transparent 62%),
+        radial-gradient(48vmax 32vmax at 34% 98%, rgba(var(--lg-crimson), .44), transparent 64%);
+    --lg-orbs-b:
+        radial-gradient(54vmax 38vmax at 86% 18%, rgba(var(--lg-saffron), .50), transparent 64%),
+        radial-gradient(48vmax 36vmax at 10% 58%, rgba(var(--lg-crimson), .42), transparent 62%),
+        radial-gradient(56vmax 36vmax at 62% 98%, rgba(var(--lg-indigo), .74), transparent 64%);
+}
+
+/* =====================================================================
+   0. AMBIENT COLOUR — glass needs something to bend.
+      Each opaque panel gets a drifting colour field behind its content.
+   ===================================================================== */
+.panel-normal, #section-media, #section-jobs, #section-whatsapp, .footer-stack {
+    isolation: isolate;
+    overflow: hidden;
+    overflow: clip;
+}
+.panel-normal::before, #section-media::before, #section-jobs::before,
+#section-whatsapp::before, .footer-stack::before {
+    content: "";
+    position: absolute;
+    inset: -12%;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--lg-orbs-a);
+    animation: lg-drift 38s ease-in-out infinite alternate;
+    will-change: transform;
+}
+#section-4::before, #section-jobs::before, .footer-stack::before { background: var(--lg-orbs-b); animation-duration: 46s; animation-direction: alternate-reverse; }
+#section-about::before { background: var(--lg-orbs-b); }
+@keyframes lg-drift {
+    from { transform: translate3d(-2%, -1.5%, 0) rotate(0deg) scale(1); }
+    to   { transform: translate3d(2.5%, 2%, 0) rotate(3deg) scale(1.06); }
+}
+
+/* =====================================================================
+   1. SURFACES — nav, cards, panels, popups
+   ===================================================================== */
+:is(body > nav, .video-card, .tiktok-card, .jobs-card, .wa-builder, .help-modal,
+    #jobs-popup, #pwa-install-popup, #jobs-bottom-banner, #seek-help-notice, #lang-toast,
+    #ham-drawer, .seo-links a, .wa-preview-box, #section-3 > div,
+    #section-5 #section-5-text-col, .jobs-badge, .top, body > main, .rel a, details, body > footer,
+    #section-2 .grid-2 > div:first-child, #section-4 .grid-2 > div:last-child) {
+    background: var(--lg-sheen), var(--lg-tint);
+    -webkit-backdrop-filter: var(--lg-bf);
+    backdrop-filter: var(--lg-bf);
+    border: 0 !important;
+    border-radius: var(--lg-r);
+    box-shadow: var(--lg-edge), var(--lg-drop);
+    isolation: isolate;
+}
+
+/* conic edge-light: the bright rim that sweeps round the glass as the pointer moves */
+:is(body > nav, .video-card, .tiktok-card, .jobs-card, .wa-builder,
+    #jobs-popup, #jobs-bottom-banner, #seek-help-notice, #lang-toast, #ham-drawer,
+    .seo-links a, .wa-preview-box, #section-3 > div, #section-5 #section-5-text-col,
+    .jobs-badge, .top, .rel a, details, #section-2 .grid-2 > div:first-child, #section-4 .grid-2 > div:last-child,
+    .btn-solid, .seek-help-btn, .wa-send-btn, .jobs-cta-btn, .hf-submit-btn, .social-btn,
+    .tt-carousel-btn, .lang-btn, .hf-chip, .nav-lang-btn, #nav-install-btn, .hero-social-icon,
+    .ham-btn, .help-modal-close, .pwaw-btn-back, .pwaw-btn-next, .pwaw-btn-dismiss,
+    .pwaw-btn-chrome, .notice-cta, .jbb-btn, .jobs-popup-cta, .lang-confirm-btn,
+    .footer-links a, .hero-scroll, #hero-cursor-dot)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    background: conic-gradient(from var(--lg-a),
+        rgba(255,255,255,.95),
+        rgba(255,255,255,.06) 15%,
+        rgba(255,255,255,0) 38%,
+        rgba(255,255,255,.5) 52%,
+        rgba(255,255,255,.05) 68%,
+        rgba(255,255,255,0) 84%,
+        rgba(255,255,255,.95));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    opacity: .55;
+    transition: --lg-a .6s cubic-bezier(.2,.8,.2,1);
+}
+
+/* pointer-following specular bloom (lives in the background stack, no extra element) */
+:is(.video-card, .tiktok-card, .jobs-card, .wa-builder, .seo-links a, .rel a, details,
+    #section-3 > div, #section-5 #section-5-text-col, .btn-solid, .seek-help-btn, .wa-send-btn,
+    .jobs-cta-btn, .hf-submit-btn, .social-btn, .lang-btn, .footer-links a):hover {
+    background:
+        radial-gradient(180px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,.2), transparent 62%),
+        var(--lg-sheen), var(--lg-tint);
+}
+
+/* static hosts need to be positioned for the rim */
+.video-card, .tiktok-card, .jobs-card, .wa-builder, .seo-links a, .btn-solid, .wa-send-btn,
+.jobs-cta-btn, .hf-submit-btn, .social-btn, .tt-carousel-btn, .lang-btn, .hf-chip,
+.nav-lang-btn, #nav-install-btn, .hero-social-icon, .ham-btn, .pwaw-btn-back, .pwaw-btn-next,
+.pwaw-btn-dismiss, .pwaw-btn-chrome, .notice-cta, .jbb-btn, .jobs-popup-cta, .lang-confirm-btn,
+.footer-links a, .jobs-badge, .rel a, details { position: relative; }
+
+/* the modal scrolls, so its rim would scroll away: edge shadows only */
+.help-modal::after { content: none; }
+#pwa-install-popup::after { content: none; }
+#pwa-install-popup.safari-mode::after { content: ""; }
+
+/* ---------- per-surface shape + tint ---------- */
+.video-card, .tiktok-card { --lg-r: 30px; overflow: hidden; }
+.jobs-card { --lg-r: 28px; text-align: left; }
+.jobs-card:hover { transform: translateY(-3px); }
+.wa-builder { --lg-r: 40px; padding: clamp(1.4rem, 3vw, 2.4rem); background: var(--lg-sheen), var(--lg-tint-dark) !important; }
+.wa-preview-box {
+    --lg-r: 26px;
+    background: var(--lg-sheen), rgba(37, 211, 102, .1) !important;
+    box-shadow: var(--lg-edge), 0 8px 24px -10px rgba(0,0,0,.5);
+}
+.help-modal {
+    --lg-r: 38px;
+    background: var(--lg-sheen), rgba(12, 12, 18, .78) !important;
+    -webkit-backdrop-filter: var(--lg-bf-modal); backdrop-filter: var(--lg-bf-modal);
+}
+.help-modal-header { border-bottom-color: rgba(255,255,255,.14); }
+#jobs-popup { --lg-r: 36px; background: var(--lg-sheen), rgba(12, 12, 18, .78) !important; -webkit-backdrop-filter: var(--lg-bf-modal); backdrop-filter: var(--lg-bf-modal); }
+.jobs-popup-top {
+    background: linear-gradient(135deg, rgba(var(--lg-saffron), .5), rgba(var(--lg-saffron), .18)) !important;
+    box-shadow: inset 0 -1px 0 rgba(255,255,255,.25);
+}
+.jobs-popup-top-label { color: rgba(255,255,255,.75) !important; }
+.jobs-popup-top-title { color: #fff !important; }
+#pwa-install-popup { --lg-r: 30px; background: var(--lg-sheen), rgba(14, 14, 20, .74) !important; }
+#jobs-bottom-banner {
+    left: 12px; right: 12px; bottom: 12px; width: auto; max-width: 960px; margin-inline: auto;
+    --lg-r: 999px; padding: .55rem .6rem .55rem 1.4rem;
+    background: var(--lg-sheen), rgba(var(--lg-saffron), .1) !important;
+    transform: translateY(calc(100% + 40px));
+}
+#jobs-bottom-banner.visible { transform: translateY(0); }
+#seek-help-notice {
+    --lg-r: 999px;
+    top: 76px; left: 12px; right: 12px; width: fit-content; max-width: calc(100% - 24px); margin-inline: auto;
+    padding: .45rem .5rem .45rem 1.1rem;
+    background: var(--lg-sheen), rgba(var(--lg-crimson), .16) !important;
+}
+.notice-text { color: rgba(255,255,255,.88); }
+#seek-help-notice.dismissed { border-bottom-width: 0; }
+#lang-toast { --lg-r: 999px; padding: .75rem 1.6rem; }
+.seo-links { gap: 14px; background: transparent; }
+.seo-links a { --lg-r: 24px; transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+.seo-links a:hover { background: var(--lg-sheen), var(--lg-tint); transform: translateY(-3px); }
+.jobs-badge { --lg-r: 999px; background: var(--lg-sheen), rgba(var(--lg-saffron), .16) !important; padding: .5rem 1.15rem; }
+
+/* text columns of sections 2 and 4 sit on glass slabs */
+#section-2 .grid-2 > div:first-child, #section-4 .grid-2 > div:last-child {
+    --lg-r: 48px; position: relative;
+    padding: clamp(1.8rem, 3.6vw, 3.4rem) !important;
+    background: var(--lg-sheen), rgba(10, 10, 16, .3) !important;
+}
+#section-2 .editorial-number { margin-bottom: .6rem; }
+#section-2 .crosshair-box, #section-4 .crosshair-box { margin-top: 2rem !important; }
+
+/* section 3: headline sits on a lens over the photograph */
+#section-3 > div {
+    --lg-r: 64px;
+    padding: clamp(2rem, 7vh, 4.5rem) clamp(2rem, 8vw, 7rem);
+    max-width: 92vw;
+    background: var(--lg-sheen), rgba(10, 10, 16, .26) !important;
+}
+#section-3 .editorial-title, #section-3 .editorial-body { text-shadow: 0 2px 22px rgba(0,0,0,.35); }
+
+/* section 5: photograph runs full-bleed, copy lives on a glass pane */
+@media (min-width: 701px) {
+    #section-5 > div { position: relative; }
+    #section-5-img-col { position: absolute !important; inset: 0; flex: none !important; width: 100% !important; height: 100% !important; }
+    #section-5 #section-5-text-col {
+        position: relative; z-index: 2;
+        flex: 0 1 min(580px, 48vw) !important;
+        margin: auto clamp(1.5rem, 5vw, 5rem) auto auto;
+        padding: clamp(2rem, 4vw, 3.4rem) clamp(1.6rem, 3.4vw, 3rem) !important;
+        --lg-r: 48px;
+        background: var(--lg-sheen), rgba(10, 10, 16, .58) !important;
+        max-height: 88vh;
+    }
+}
+#section-5 #section-5-text-col h2 { color: #fff !important; text-shadow: 0 2px 18px rgba(0,0,0,.4); }
+#section-5 #section-5-text-col p:not([style*="accent-red"]) { color: rgba(255,255,255,.84) !important; }
+#section-5 #section-5-text-col p[style*="accent-red"] { color: #ff8a8a !important; }
+@media (max-width: 700px) {
+    #section-5 #section-5-text-col {
+        --lg-r: 40px;
+        flex: 0 1 auto !important;
+        margin: auto 14px !important;
+        padding: 2.6rem 1.6rem 2.2rem !important;
+        background: var(--lg-sheen), rgba(10, 10, 16, .58) !important;
+    }
+}
+
+/* =====================================================================
+   2. NAVIGATION — a floating lens, not a bar
+   ===================================================================== */
+body > nav {
+    --lg-r: 999px;
+    top: 10px; left: 10px; right: 10px; width: auto; max-width: 1440px; margin-inline: auto;
+    height: 58px; padding: 0 8px 0 20px;
+    background: var(--lg-sheen), rgba(10, 10, 16, .42) !important;
+}
+.nav-links { gap: 2px; }
+.nav-links a { color: rgba(255,255,255,.86); text-shadow: 0 1px 10px rgba(0,0,0,.55); }
+.nav-brand-name { text-shadow: 0 1px 10px rgba(0,0,0,.5); }
+.nav-links a, .nav-links a:first-child {
+    height: 42px; padding: 0 1.05rem;
+    border: 0 !important; border-radius: 999px;
+    transition: background .3s, color .3s, box-shadow .3s, transform .35s cubic-bezier(.34,1.56,.64,1);
+}
+.nav-links a:hover {
+    background: rgba(255,255,255,.1);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.4), inset 0 0 14px rgba(255,255,255,.08);
+    transform: scale(1.04);
+}
+.nav-links a.nav-help-cta {
+    background: linear-gradient(135deg, rgba(var(--lg-crimson), .72), rgba(var(--lg-crimson), .4));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.5), inset 0 0 16px rgba(255,255,255,.08), 0 6px 18px -6px rgba(var(--lg-crimson), .8);
+}
+.nav-links a.nav-help-cta:hover { background: linear-gradient(135deg, rgba(var(--lg-crimson), .9), rgba(var(--lg-crimson), .55)); }
+.nav-lang-btn-wrap { height: 44px; border-left: 0; }
+.nav-lang-btn { height: 42px; border: 0 !important; border-radius: 999px; padding: 0 1rem; }
+#nav-install-btn { height: 42px; border: 0 !important; border-radius: 999px; padding: 0 1.2rem; }
+#_vc { border-radius: 999px !important; border-color: rgba(255,255,255,.18) !important; background: rgba(255,255,255,.05) !important; }
+
+@media (max-width: 700px) {
+    body > nav { top: 8px; left: 8px; right: 8px; height: 54px; padding: 0 6px 0 16px; }
+    #seek-help-notice { top: 70px; }
+    #jobs-bottom-banner { left: 8px; right: 8px; bottom: 8px; padding: .5rem .5rem .5rem 1rem; }
+}
+
+/* hamburger + drawer */
+.ham-btn { width: 42px; height: 42px; border-radius: 50%; border: 0; }
+.ham-btn .ham-icon span { background: #fff; }
+#ham-drawer {
+    --lg-r: 32px;
+    top: 72px; left: 8px; right: 8px; width: auto;
+    padding: 8px;
+    background: var(--lg-sheen), rgba(12, 12, 18, .76) !important;
+    z-index: 1001;
+    -webkit-backdrop-filter: var(--lg-bf-modal); backdrop-filter: var(--lg-bf-modal);
+    transform: translateY(-130%) scale(.96);
+    transition: transform .5s cubic-bezier(.34,1.3,.5,1), opacity .3s;
+    opacity: 0;
+}
+#ham-drawer.open { transform: translateY(0) scale(1); opacity: 1; }
+.ham-drawer-item { border-radius: 20px; border-bottom: 0 !important; transition: background .25s; }
+.ham-drawer-item:hover, .ham-drawer-item:active { background: rgba(255,255,255,.1); }
+.ham-drawer-item .ham-item-icon {
+    background: linear-gradient(135deg, rgba(var(--lg-saffron), .6), rgba(var(--lg-saffron), .25)) !important;
+    border-radius: 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,.55);
+}
+.ham-drawer-item .ham-item-icon svg { fill: #fff; }
+.ham-drawer-divider { background: rgba(255,255,255,.1); margin: 4px 14px; }
+
+/* =====================================================================
+   3. CONTROLS — buttons and chips that squish like liquid
+   ===================================================================== */
+:is(.btn-solid, .seek-help-btn, .wa-send-btn, .jobs-cta-btn, .hf-submit-btn, .social-btn,
+    .tt-carousel-btn, .lang-btn, .hf-chip, .nav-lang-btn, #nav-install-btn, .hero-social-icon,
+    .ham-btn, .help-modal-close, .pwaw-btn-back, .pwaw-btn-next, .pwaw-btn-dismiss,
+    .pwaw-btn-chrome, .notice-cta, .jbb-btn, .jobs-popup-cta, .jobs-popup-dismiss,
+    .lang-confirm-btn, .footer-links a, .hero-scroll) {
+    --_tint: rgba(255,255,255,.07);
+    background: var(--lg-sheen), var(--_tint);
+    -webkit-backdrop-filter: var(--lg-bf);
+    backdrop-filter: var(--lg-bf);
+    color: var(--text-light);
+    border: 0 !important;
+    border-radius: 999px;
+    box-shadow: var(--lg-edge), var(--lg-drop-sm);
+    isolation: isolate;
+    text-shadow: 0 1px 8px rgba(0,0,0,.35);
+    transition: transform .42s cubic-bezier(.34,1.56,.64,1), box-shadow .3s, background .3s, color .3s;
+}
+:is(.btn-solid, .seek-help-btn, .wa-send-btn, .jobs-cta-btn, .hf-submit-btn, .social-btn,
+    .tt-carousel-btn, .lang-btn, .hf-chip, .nav-lang-btn, #nav-install-btn, .hero-social-icon,
+    .ham-btn, .help-modal-close, .pwaw-btn-back, .pwaw-btn-next, .pwaw-btn-dismiss,
+    .pwaw-btn-chrome, .notice-cta, .jbb-btn, .jobs-popup-cta, .jobs-popup-dismiss,
+    .lang-confirm-btn, .footer-links a):hover {
+    background: radial-gradient(120px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,.28), transparent 70%), var(--lg-sheen), var(--_tint);
+    color: #fff;
+    transform: scale(1.045);
+}
+:is(.btn-solid, .seek-help-btn, .wa-send-btn, .jobs-cta-btn, .hf-submit-btn, .social-btn,
+    .tt-carousel-btn, .lang-btn, .hf-chip, .nav-lang-btn, #nav-install-btn, .hero-social-icon,
+    .ham-btn, .help-modal-close, .pwaw-btn-back, .pwaw-btn-next, .pwaw-btn-dismiss,
+    .pwaw-btn-chrome, .notice-cta, .jbb-btn, .jobs-popup-cta, .jobs-popup-dismiss,
+    .lang-confirm-btn, .footer-links a):active {
+    transform: scale(.94);
+    transition-duration: .12s;
+}
+:is(.btn-solid, .seek-help-btn, .wa-send-btn, .jobs-cta-btn, .hf-submit-btn, .social-btn,
+    .lang-btn, .hf-chip, .footer-links a):focus-visible,
+:is(.nav-links a, .nav-lang-btn, #nav-install-btn, .ham-btn, .hero-social-icon):focus-visible {
+    outline: 2px solid rgba(255,255,255,.9); outline-offset: 3px;
+}
+
+/* tints */
+.seek-help-btn, .hf-submit-btn, .notice-cta { --_tint: rgba(var(--lg-crimson), .5); }
+.seek-help-btn { box-shadow: var(--lg-edge), 0 14px 34px -10px rgba(var(--lg-crimson), .85); }
+.seek-help-btn:hover, .hf-submit-btn:hover, .notice-cta:hover { --_tint: rgba(var(--lg-crimson), .66); }
+.seek-help-btn::before { border-radius: 999px; }
+.jobs-cta-btn, #nav-install-btn, .jbb-btn, .jobs-popup-cta, .pwaw-btn-next, .pwaw-btn-chrome, .ham-btn { --_tint: rgba(var(--lg-saffron), .42); color: #fff7e8; font-weight: 700; }
+.jobs-cta-btn { box-shadow: var(--lg-edge), 0 14px 34px -10px rgba(var(--lg-saffron), .8); }
+.jobs-cta-btn:hover, #nav-install-btn:hover, .jbb-btn:hover, .jobs-popup-cta:hover, .pwaw-btn-next:hover, .pwaw-btn-chrome:hover, .ham-btn:hover { --_tint: rgba(var(--lg-saffron), .58); color: #fff; }
+.jobs-cta-btn svg, #nav-install-btn svg { fill: currentColor; }
+.wa-send-btn { --_tint: rgba(37, 211, 102, .36); box-shadow: var(--lg-edge), 0 14px 34px -10px rgba(37, 211, 102, .7); }
+.wa-send-btn:hover { --_tint: rgba(37, 211, 102, .52); transform: scale(1.03); }
+.btn-solid { --_tint: rgba(255,255,255,.14); }
+.hf-chip { color: var(--text-muted); }
+.hf-chip.selected { --_tint: rgba(var(--lg-crimson), .5); color: #fff; }
+.lang-btn { border-radius: 18px; }
+.lang-btn.active { --_tint: rgba(var(--lg-crimson), .32); }
+.tt-carousel-btn, .help-modal-close, .hero-social-icon, .ham-btn { border-radius: 50%; }
+.jobs-popup-dismiss { background: var(--lg-sheen), rgba(255,255,255,.06) !important; }
+
+/* hero social icons: tinted by brand, glass on top */
+.hero-social-icon { opacity: 1; box-shadow: var(--lg-edge), var(--lg-drop-sm); }
+.hero-social-icon::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+    background: var(--brand); opacity: .55;
+}
+.hero-social-icon:hover::before { opacity: .78; }
+.hero-social-icon svg { filter: drop-shadow(0 1px 4px rgba(0,0,0,.4)); }
+.social-btn.btn-tiktok:hover { --_tint: rgba(255, 0, 80, .3); }
+.social-btn.btn-youtube:hover { --_tint: rgba(255, 0, 0, .3); }
+.social-btn.btn-instagram:hover { --_tint: rgba(225, 48, 108, .3); }
+.social-btn.btn-facebook:hover { --_tint: rgba(24, 119, 242, .34); }
+.footer-links a { padding: .55rem 1.1rem; font-size: .78rem; }
+.footer-links { gap: .7rem; }
+
+/* =====================================================================
+   4. FIELDS — recessed into the glass
+   ===================================================================== */
+:is(.wa-select, .wa-input, #wa-message-preview, .hf-input, .hf-select, .hf-textarea, .lang-search) {
+    background-color: rgba(8, 8, 14, .38) !important;
+    border: 1px solid rgba(255,255,255,.14) !important;
+    border-radius: 18px;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,.5), inset 0 -1px 0 rgba(255,255,255,.16);
+    color: var(--text-light);
+    transition: border-color .3s, box-shadow .3s, background-color .3s;
+}
+:is(.wa-select, .wa-input, #wa-message-preview, .hf-input, .hf-select, .hf-textarea, .lang-search):focus {
+    border-color: rgba(255,255,255,.55) !important;
+    background-color: rgba(8, 8, 14, .5) !important;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,.5), 0 0 0 4px rgba(255,255,255,.1), 0 0 26px rgba(var(--lg-saffron), .25);
+    outline: none;
+}
+.hf-consent { border-radius: 20px; border-color: rgba(var(--lg-crimson), .4) !important; }
+.lang-search { border-radius: 999px; }
+.hf-toggle-track { border-radius: 999px; }
+.hf-toggle-slider { border-radius: 999px; }
+.hf-success-icon { border-radius: 50%; }
+
+/* overlays: dim only, so the modal glass can bend the live page behind it */
+#help-modal-overlay, #jobs-popup-overlay {
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    background: radial-gradient(80vmax 60vmax at 50% 40%, rgba(var(--lg-indigo), .22), rgba(0,0,0,.62));
+}
+#lang-overlay {
+    background: #050507;
+}
+#lang-overlay::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background: var(--lg-orbs-a);
+}
+.lang-overlay-content { z-index: 2; }
+
+/* imagery */
+.panel-normal img { border-radius: 36px; box-shadow: 0 34px 80px -24px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.14); }
+.panel-normal .collage img { border-radius: 32px; }
+.video-facade img, .video-card iframe, .tiktok-card iframe { border-radius: 0; box-shadow: none; }
+
+/* =====================================================================
+   5. HERO — frame sequence, scroll-scrubbed
+   ===================================================================== */
+.hero-track { position: relative; height: 480vh; margin-bottom: -100vh; z-index: 1; }
+.hero-track > #section-1 { z-index: 1; }
+
+.hero-img-box { width: 100%; height: 100%; min-width: 0; cursor: auto; background: #000; }
+.hero-stage {
+    position: absolute; inset: 0; overflow: hidden;
+    background:
+        radial-gradient(60vmax 44vmax at 22% 30%, rgba(var(--lg-indigo), .55), transparent 62%),
+        radial-gradient(48vmax 34vmax at 82% 72%, rgba(var(--lg-saffron), .34), transparent 62%),
+        #000;
+}
+.hero-img-box img.hero-poster, #hero-canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; transform: none; filter: none;
+    /* frames are on pure black: screen lets the colour field behind show through */
+    mix-blend-mode: screen;
+}
+.hero-img-box img.hero-poster { z-index: 1; }
+.hero-img-box.is-ready img.hero-poster { visibility: hidden; }
+#hero-canvas { z-index: 2; display: block; }
+.giant-bg-text { z-index: 1; opacity: .22; font-size: 24vw; top: 70%; }
+
+/* the lens that follows the cursor */
+#hero-cursor-dot {
+    position: absolute; z-index: 10;
+    width: 128px; height: 128px; margin: 0;
+    border-radius: 50%;
+    mix-blend-mode: normal;
+    background: var(--lg-sheen);
+    -webkit-backdrop-filter: var(--lg-bf);
+    backdrop-filter: var(--lg-bf);
+    box-shadow: var(--lg-edge), 0 20px 50px -10px rgba(0,0,0,.6);
+    transition: width .35s cubic-bezier(.34,1.56,.64,1), height .35s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+    isolation: isolate;
+}
+.hero-img-box:hover #hero-cursor-dot { width: 148px; height: 148px; box-shadow: var(--lg-edge), 0 24px 56px -10px rgba(0,0,0,.65); }
+#hero-cursor-dot::after { animation: lg-spin 7s linear infinite; }
+@keyframes lg-spin { to { --lg-a: 495deg; } }
+
+/* scroll cue */
+.hero-scroll {
+    position: absolute; left: 50%; bottom: 3.2vh; transform: translateX(-50%);
+    width: 52px; height: 84px; border-radius: 999px;
+    display: flex; justify-content: center; padding-top: 14px; z-index: 6;
+    transition: opacity .5s;
+    pointer-events: none;
+}
+.hero-scroll i {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #fff; box-shadow: 0 0 12px rgba(255,255,255,.9);
+    animation: lg-scroll 2.2s cubic-bezier(.45,0,.2,1) infinite;
+}
+@keyframes lg-scroll { 0% { transform: translateY(0); opacity: 0; } 25% { opacity: 1; } 80% { transform: translateY(40px); opacity: 0; } 100% { opacity: 0; } }
+.hero-img-box.is-scrolled .hero-scroll { opacity: 0; }
+
+.hero-socials { top: 128px; }
+
+@media (max-width: 768px) {
+    #hero-cursor-dot { display: none !important; }
+    .hero-scroll { height: 66px; width: 42px; }
+}
+
+/* =====================================================================
+   6. SUBPAGES (site.css pages)
+   ===================================================================== */
+body > header.top, .top {
+    top: 10px; margin: 10px 10px 0; height: 56px; padding: 0 1.1rem;
+    --lg-r: 999px; background: var(--lg-sheen), rgba(12,12,18,.3) !important;
+    border-bottom: 0 !important;
+}
+.top nav .cta { border-radius: 999px; background: linear-gradient(135deg, rgba(var(--lg-crimson), .7), rgba(var(--lg-crimson), .4)); box-shadow: inset 0 1px 0 rgba(255,255,255,.5); padding: .55rem 1.1rem; }
+#lang-select { border-radius: 999px; background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); }
+body > main { --lg-r: 44px; margin: 3rem auto 2rem; padding: clamp(2rem, 5vw, 3.6rem) clamp(1.4rem, 4vw, 3rem); background: var(--lg-sheen), rgba(10,10,16,.34) !important; }
+.lead { border-radius: 0 20px 20px 0; background: rgba(255,255,255,.04); padding: 1rem 1.2rem 1rem 1.1rem; }
+details { --lg-r: 22px; padding: .9rem 1.2rem; margin-bottom: .7rem; }
+.rel a { --lg-r: 999px; padding: .6rem 1.2rem; transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+.rel a:hover { transform: scale(1.05); text-decoration: none; }
+body > footer { --lg-r: 44px; margin: 0 10px 10px; background: var(--lg-sheen), rgba(20,20,28,.4) !important; border-top: 0 !important; }
+body:not(:has(.main-wrapper))::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: var(--lg-orbs-a);
+}
+
+/* =====================================================================
+   7. FALLBACKS
+   ===================================================================== */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    :is(body > nav, .video-card, .tiktok-card, .jobs-card, .wa-builder, .help-modal, #jobs-popup,
+        #pwa-install-popup, #jobs-bottom-banner, #seek-help-notice, #lang-toast, #ham-drawer,
+        .seo-links a, .wa-preview-box, #section-3 > div, #section-5 #section-5-text-col, body > main, .top) {
+        background: var(--lg-sheen), rgba(22, 22, 30, .92) !important;
+    }
+}
+@media (prefers-reduced-transparency: reduce) {
+    :root { --lg-bf: none; --lg-bf-soft: none; --lg-tint: rgba(28,28,38,.94); --lg-tint-dark: rgba(18,18,26,.97); }
+    :is(body > nav, .help-modal, #jobs-popup, #pwa-install-popup, #ham-drawer, #section-3 > div, #section-5 #section-5-text-col) { background: rgba(18,18,26,.96) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .panel-normal::before, #section-media::before, #section-jobs::before, #section-whatsapp::before,
+    .footer-stack::before, #hero-cursor-dot::after, .hero-scroll i { animation: none; }
+    .hero-track { height: auto; margin-bottom: 0; }
+    *, *::before, *::after { scroll-behavior: auto !important; }
+}
+
+/* the pinned section 5 used to sit on top of the About block; lift About above it */
+#section-about { position: relative; z-index: 9; }
+
+.jbb-text { min-width: 0; }
+.jbb-title { overflow: hidden; text-overflow: ellipsis; }
+
+/* keep the hero social icons from showing through the open mobile menu */
+.hero-socials { transition: opacity .25s; }
+body:has(#ham-drawer.open) .hero-socials { opacity: 0; pointer-events: none; }
+
+
+/* =====================================================================
+   8. REFINEMENT — calmer, readable, no overlap
+   ===================================================================== */
+:root {
+    --lg-edge:
+        inset 0 1px 0 rgba(255,255,255,.4),
+        inset 0 -1px 0 rgba(255,255,255,.08),
+        inset 0 0 18px rgba(255,255,255,.04);
+    --lg-drop: 0 14px 36px -14px rgba(0,0,0,.55);
+    --lg-drop-sm: 0 6px 16px -8px rgba(0,0,0,.5);
+    --lg-bf-bar: blur(18px) saturate(1.6) brightness(1.04);
+}
+
+/* fixed bars: real blur so page text never reads through them */
+body > nav, #seek-help-notice, #jobs-bottom-banner, #ham-drawer, #pwa-install-popup, #lang-toast {
+    -webkit-backdrop-filter: var(--lg-bf-bar) !important;
+            backdrop-filter: var(--lg-bf-bar) !important;
+}
+body > nav { background: var(--lg-sheen), rgba(10, 10, 16, .68) !important; }
+#ham-drawer {
+    background: var(--lg-sheen), rgba(14, 14, 20, .94) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(1.4) !important; backdrop-filter: blur(30px) saturate(1.4) !important;
+}
+#ham-drawer::after { content: none !important; }
+#lang-toast { background: var(--lg-sheen), rgba(12, 12, 18, .7) !important; }
+
+/* the notice scrolls away with the page instead of floating over content */
+#seek-help-notice {
+    position: absolute;
+    top: 78px;
+    background: var(--lg-sheen), rgba(30, 12, 14, .62) !important;
+}
+
+/* the jobs banner: compact, opaque enough to read, and it reserves its own space */
+#jobs-bottom-banner {
+    max-width: 640px;
+    padding: .4rem .5rem .4rem 1.1rem;
+    background: var(--lg-sheen), rgba(14, 14, 20, .78) !important;
+    box-shadow: var(--lg-edge), 0 10px 30px -10px rgba(0,0,0,.7);
+}
+body.jbb-visible { padding-bottom: 76px; }
+
+/* gentler interaction */
+:is(.btn-solid, .seek-help-btn, .wa-send-btn, .jobs-cta-btn, .hf-submit-btn, .social-btn,
+    .tt-carousel-btn, .lang-btn, .hf-chip, .nav-lang-btn, #nav-install-btn, .hero-social-icon,
+    .ham-btn, .help-modal-close, .pwaw-btn-back, .pwaw-btn-next, .pwaw-btn-dismiss,
+    .pwaw-btn-chrome, .notice-cta, .jbb-btn, .jobs-popup-cta, .lang-confirm-btn, .footer-links a):hover {
+    transform: scale(1.02);
+}
+.nav-links a:hover { transform: none; }
+.jobs-card:hover, .seo-links a:hover, .rel a:hover { transform: translateY(-2px); }
+
+/* no glass inside glass: nested panels and fields are flat, recessed tints */
+.wa-preview-box {
+    background: rgba(255,255,255,.04) !important;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.08) !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+    --lg-r: 18px;
+}
+.wa-preview-box::after { content: none; }
+:is(.wa-select, .wa-input, #wa-message-preview, .hf-input, .hf-select, .hf-textarea, .lang-search) {
+    border-radius: 14px;
+    box-shadow: inset 0 1px 4px rgba(0,0,0,.4);
+}
+.hf-consent { border-radius: 14px; }
+
+@media (max-width: 700px) {
+    :root { --lg-r: 22px; }
+    /* visitor badge collides with the logo on small screens */
+    #_vc { display: none !important; }
+    body > nav { height: 52px; }
+    #seek-help-notice { top: 70px; }
+    .wa-builder { --lg-r: 26px; padding: 1.1rem; gap: 1.3rem; }
+    .wa-preview-box { padding: 1rem; }
+    .wa-send-btn { padding: .95rem 1.4rem; }
+    .video-card, .tiktok-card, .jobs-card { --lg-r: 22px; }
+    #section-2 .grid-2 > div:first-child, #section-4 .grid-2 > div:last-child { --lg-r: 28px; padding: 1.5rem !important; }
+    #section-3 > div { --lg-r: 34px; }
+    #section-5 #section-5-text-col { --lg-r: 28px; padding: 2.2rem 1.4rem 1.8rem !important; }
+    #jobs-bottom-banner { max-width: none; }
+    .jbb-label { display: none; }
+    .help-modal { --lg-r: 26px; }
+    #jobs-popup { --lg-r: 26px; }
+}
