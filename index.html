@@ -2365,6 +2365,42 @@
         .seo-links small{display:block;color:var(--text-muted);margin-top:.35rem;font-size:.72rem;letter-spacing:0}
  </style>
     <link rel="stylesheet" href="liquid-glass.css?v=3">
+    <style>
+/* ===== NAV: JOBS + PROPERTIES (loaded after liquid-glass.css so it wins) ===== */
+.nav-links a .nav-ic{width:14px;height:14px;fill:currentColor;flex-shrink:0;margin-right:.5rem}
+
+/* Desktop buttons */
+.nav-links a.nav-jobs-cta{background:var(--accent-gold);color:#0a0a0a;font-weight:700;border-right-color:rgba(212,168,83,.5)}
+.nav-links a.nav-jobs-cta:hover{background:#c49840;color:#0a0a0a}
+.nav-links a.nav-prop-cta{background:var(--text-light);color:#0a0a0a;font-weight:700;border-right-color:rgba(244,240,234,.5)}
+.nav-links a.nav-prop-cta:hover{background:#cfcbc6;color:#0a0a0a}
+
+/* Tighten links on smaller laptops so 7 items fit */
+@media (max-width:1180px){
+  .nav-links a{padding:0 .7rem;font-size:.66rem;letter-spacing:.08em}
+  .nav-links a .nav-ic{margin-right:.35rem}
+}
+
+/* Mobile buttons: live in the nav bar, outside the drawer */
+.nav-mobile-cta{display:none;align-items:center;gap:.4rem;margin-left:auto}
+.nm-btn{display:inline-flex;align-items:center;gap:.3rem;height:34px;padding:0 .75rem;border-radius:100px;
+  font-family:var(--font-sans);font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  text-decoration:none;white-space:nowrap;color:#0a0a0a;box-shadow:0 2px 12px rgba(0,0,0,.45)}
+.nm-btn svg{width:13px;height:13px;fill:#0a0a0a;flex-shrink:0}
+.nm-jobs{background:var(--accent-gold)}
+.nm-prop{background:var(--text-light)}
+.nm-btn:active{transform:scale(.96)}
+@media (max-width:700px){
+  .nav-mobile-cta{display:flex}
+  .nav-brand{min-width:0;flex-shrink:1}
+}
+/* Very small phones: free up space so nothing wraps */
+@media (max-width:480px){
+  #_vc-label{display:none !important}
+  .nav-brand-name{font-size:.8rem}
+  .nm-btn{padding:0 .6rem;font-size:.58rem}
+}
+    </style>
 </head>
 <body>
 
@@ -2548,7 +2584,23 @@
             <a href="humanitarian-work.html">Work</a>
             <a href="#section-media" data-i18n="nav_videos">Videos</a>
             <a href="#section-whatsapp" data-i18n="nav_message">Message</a>
+            <a href="https://jobs.amriksinghspain.com" target="_blank" rel="noopener" class="nav-jobs-cta">
+                <svg class="nav-ic" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>Jobs
+            </a>
+            <a href="https://property.amriksinghspain.com" target="_blank" rel="noopener" class="nav-prop-cta">
+                <svg class="nav-ic" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Properties
+            </a>
             <a href="#section-5" class="nav-help-cta" data-i18n="s5_cta" onclick="openHelpModal();return false;"><span class="nav-help-dot"></span>Humanitarian Help</a>
+        </div>
+
+        <!-- Mobile-only: Jobs + Properties stay visible in the bar (not in the drawer) -->
+        <div class="nav-mobile-cta">
+            <a href="https://jobs.amriksinghspain.com" target="_blank" rel="noopener" class="nm-btn nm-jobs">
+                <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>Jobs
+            </a>
+            <a href="https://property.amriksinghspain.com" target="_blank" rel="noopener" class="nm-btn nm-prop">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Properties
+            </a>
         </div>
 
         <!-- Right: Lang + Install (desktop) + Hamburger (mobile) -->
@@ -2584,8 +2636,8 @@
             <span style="color:#fff;font-weight:600;" data-i18n="s5_cta">Humanitarian Help</span>
         </button>
         <div class="ham-drawer-divider"></div>
-        <a class="ham-drawer-item" href="biography.html"><span class="ham-item-icon"></span><span>Biography</span></a>
-        <a class="ham-drawer-item" href="humanitarian-work.html"><span class="ham-item-icon"></span><span>Humanitarian Work</span></a>
+        <a class="ham-drawer-item" href="biography.html"><span class="ham-item-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span><span>Biography</span></a>
+        <a class="ham-drawer-item" href="humanitarian-work.html"><span class="ham-item-icon"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></span><span>Humanitarian Work</span></a>
         <a class="ham-drawer-item" href="#section-media" onclick="closeHamMenu();">
             <span class="ham-item-icon">
                 <svg viewBox="0 0 24 24"><path d="M10 8l6 4-6 4V8zm-7 4a9 9 0 1 0 18 0A9 9 0 0 0 3 12z" fill="#000"/></svg>
