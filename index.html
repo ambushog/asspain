@@ -2403,12 +2403,17 @@
 .nav-links .nav-more-menu a.nav-help-cta:hover{background:#a31e1e;color:#fff}
 
 @media (max-width:1180px){.nav-more-btn{padding:0 .8rem;font-size:.66rem;letter-spacing:.08em}}
-@media (max-width:480px){
-  .nm-btn{padding:0 .5rem;font-size:.54rem;gap:.2rem}
-  .nm-btn svg{width:11px;height:11px}
-  .nav-mobile-cta{gap:.3rem}
+/* Mobile: icon-only buttons (labels hidden) */
+@media (max-width:700px){
+  .nav-mobile-cta{gap:.4rem}
+  .nm-btn{width:38px;height:38px;padding:0;justify-content:center;gap:0;font-size:0;line-height:0;letter-spacing:0}
+  .nm-btn svg{width:19px;height:19px}
 }
-@media (max-width:400px){.nav-brand-name{display:none}}
+@media (max-width:480px){
+  .nav-mobile-cta{gap:.3rem}
+  .nm-btn{width:36px;height:36px}
+  .nm-btn svg{width:18px;height:18px}
+}
 
 /* Tighten links on smaller laptops so 7 items fit */
 @media (max-width:1180px){
@@ -2641,11 +2646,11 @@
 
         <!-- Mobile-only: Jobs + Properties stay visible in the bar (not in the drawer) -->
         <div class="nav-mobile-cta">
-            <a href="./debook" class="nm-btn nm-book"><svg viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>Books</a>
-            <a href="https://jobs.amriksinghspain.com" target="_blank" rel="noopener" class="nm-btn nm-jobs">
+            <a href="./debook" class="nm-btn nm-book" aria-label="Books" title="Books"><svg viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>Books</a>
+            <a href="https://jobs.amriksinghspain.com" target="_blank" rel="noopener" class="nm-btn nm-jobs" aria-label="Jobs" title="Jobs">
                 <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>Jobs
             </a>
-            <a href="https://property.amriksinghspain.com" target="_blank" rel="noopener" class="nm-btn nm-prop">
+            <a href="https://property.amriksinghspain.com" target="_blank" rel="noopener" class="nm-btn nm-prop" aria-label="Properties" title="Properties">
                 <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Properties
             </a>
         </div>
