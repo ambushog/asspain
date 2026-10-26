@@ -2375,6 +2375,41 @@
 .nav-links a.nav-prop-cta{background:var(--text-light);color:#0a0a0a;font-weight:700;border-right-color:rgba(244,240,234,.5)}
 .nav-links a.nav-prop-cta:hover{background:#cfcbc6;color:#0a0a0a}
 
+
+/* ===== NAV: BOOKS + MORE DROPDOWN ===== */
+.nav-links a.nav-book-cta{background:#8fcdf0;color:#0a0a0a;font-weight:700;border-right-color:rgba(143,205,240,.5)}
+.nav-links a.nav-book-cta:hover{background:#74b9e0;color:#0a0a0a}
+.nav-links a.nav-book-cta,.nav-links a.nav-jobs-cta,.nav-links a.nav-prop-cta{border-left:none}
+.nm-book{background:#8fcdf0}
+
+.nav-more{position:relative;height:58px;display:flex;align-items:center}
+.nav-more-btn{height:58px;display:flex;align-items:center;gap:.3rem;padding:0 1.2rem;background:transparent;border:none;
+  border-right:1px solid var(--border-light);color:var(--text-muted);font-family:var(--font-sans);font-size:.72rem;
+  text-transform:uppercase;letter-spacing:.12em;cursor:pointer;white-space:nowrap;transition:color .25s,background .25s}
+.nav-more-btn:hover,.nav-more.open .nav-more-btn{color:var(--text-light);background:rgba(255,255,255,.06)}
+.nav-more-btn:focus-visible{outline:1px solid var(--accent-gold);outline-offset:-3px}
+.nav-more-caret{width:18px;height:18px;fill:currentColor;transition:transform .25s}
+.nav-more.open .nav-more-caret{transform:rotate(180deg)}
+.nav-more-menu{position:absolute;top:100%;right:0;min-width:220px;display:flex;flex-direction:column;
+  background:rgba(10,10,10,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--border-light);border-top:2px solid var(--accent-gold);box-shadow:0 18px 44px rgba(0,0,0,.7);
+  opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .2s,transform .2s,visibility .2s;z-index:1003}
+.nav-more.open .nav-more-menu{opacity:1;visibility:visible;transform:translateY(0)}
+.nav-links .nav-more-menu a{height:auto;padding:.95rem 1.3rem;border:none;border-bottom:1px solid rgba(255,255,255,.07);
+  justify-content:flex-start;font-size:.72rem;letter-spacing:.12em;color:var(--text-light)}
+.nav-links .nav-more-menu a:last-child{border-bottom:none}
+.nav-links .nav-more-menu a:hover{background:rgba(212,168,83,.1);color:var(--accent-gold)}
+.nav-links .nav-more-menu a.nav-help-cta{background:var(--accent-red);color:#fff}
+.nav-links .nav-more-menu a.nav-help-cta:hover{background:#a31e1e;color:#fff}
+
+@media (max-width:1180px){.nav-more-btn{padding:0 .8rem;font-size:.66rem;letter-spacing:.08em}}
+@media (max-width:480px){
+  .nm-btn{padding:0 .5rem;font-size:.54rem;gap:.2rem}
+  .nm-btn svg{width:11px;height:11px}
+  .nav-mobile-cta{gap:.3rem}
+}
+@media (max-width:400px){.nav-brand-name{display:none}}
+
 /* Tighten links on smaller laptops so 7 items fit */
 @media (max-width:1180px){
   .nav-links a{padding:0 .7rem;font-size:.66rem;letter-spacing:.08em}
@@ -2401,120 +2436,7 @@
   .nm-btn{padding:0 .6rem;font-size:.58rem}
 }
     
-        /* ========================================
-           READ THE BOOK POPUP
-        ======================================== */
-        #book-popup-overlay {
-            position: fixed; inset: 0; z-index: 10000;
-            display: flex; align-items: center; justify-content: center;
-            padding: 1.2rem;
-            background: radial-gradient(ellipse at 50% 45%, rgba(15,44,60,0.82) 0%, rgba(1,3,5,0.94) 80%);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            opacity: 0; visibility: hidden; pointer-events: none;
-            transition: opacity 0.5s ease, visibility 0.5s;
-        }
-        #book-popup-overlay.open { opacity: 1; visibility: visible; pointer-events: all; }
-
-        .book-popup {
-            position: relative; width: 100%; max-width: 440px;
-            max-height: calc(100vh - 2.4rem); overflow-y: auto;
-            text-align: center;
-            padding: 2.6rem 2rem 2rem;
-            background: linear-gradient(160deg, #0d2433 0%, #08141d 55%, #050b11 100%);
-            border: 1px solid rgba(143,205,240,0.28);
-            border-top: 2px solid var(--accent-gold);
-            box-shadow: 0 30px 80px rgba(0,0,0,0.85), 0 0 60px -10px rgba(70,160,255,0.25), inset 0 0 40px rgba(143,205,240,0.04);
-            transform: translateY(30px) scale(0.96);
-            transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
-        }
-        #book-popup-overlay.open .book-popup { transform: translateY(0) scale(1); }
-        .book-popup::before, .book-popup::after {
-            content: ''; position: absolute; width: 22px; height: 22px;
-            border: 1px solid var(--accent-gold); opacity: 0.7; pointer-events: none;
-        }
-        .book-popup::before { top: 9px; left: 9px; border-right: none; border-bottom: none; }
-        .book-popup::after  { bottom: 9px; right: 9px; border-left: none; border-top: none; }
-
-        .book-popup-close {
-            position: absolute; top: 10px; right: 12px;
-            width: 34px; height: 34px; border-radius: 50%;
-            background: transparent; border: 1px solid rgba(143,205,240,0.25);
-            color: #8fcdf0; font-size: 1.3rem; line-height: 1; cursor: pointer;
-            transition: background 0.2s, color 0.2s, border-color 0.2s;
-        }
-        .book-popup-close:hover, .book-popup-close:focus-visible {
-            background: rgba(143,205,240,0.12); color: #fff; border-color: #8fcdf0; outline: none;
-        }
-
-        .book-popup-icon {
-            width: 86px; height: 86px; margin: 0 auto 1.3rem; position: relative;
-            display: flex; align-items: center; justify-content: center;
-            animation: bookFloat 4s ease-in-out infinite;
-        }
-        .book-popup-icon::before {
-            content: ''; position: absolute; inset: -14px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(212,168,83,0.28) 0%, rgba(70,160,255,0.12) 45%, transparent 70%);
-            animation: bookGlow 4s ease-in-out infinite;
-        }
-        .book-popup-icon svg { position: relative; width: 100%; height: 100%; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.6)); }
-        @keyframes bookFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        @keyframes bookGlow  { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
-
-        .book-popup-eyebrow {
-            font-family: var(--font-sans); font-size: 0.66rem; font-weight: 500;
-            letter-spacing: 0.32em; text-transform: uppercase;
-            color: var(--accent-gold); margin-bottom: 0.9rem;
-        }
-        .book-popup-title {
-            font-family: var(--font-serif); font-weight: 400;
-            font-size: clamp(1.7rem, 6vw, 2.2rem); line-height: 1.15;
-            color: var(--text-light); margin-bottom: 0.9rem;
-        }
-        .book-popup-title em { font-style: italic; color: #8fcdf0; }
-        .book-popup-sub {
-            font-family: var(--font-sans); font-size: 0.82rem; font-weight: 300;
-            line-height: 1.7; color: var(--text-muted); margin: 0 auto 1.3rem; max-width: 330px;
-        }
-        .book-popup-langs {
-            display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.6rem;
-        }
-        .book-popup-langs span {
-            font-family: var(--font-sans); font-size: 0.68rem; letter-spacing: 0.1em;
-            padding: 0.3rem 0.8rem; color: #8fcdf0;
-            border: 1px solid rgba(143,205,240,0.28); border-radius: 20px;
-        }
-        .book-popup-btn {
-            display: flex; align-items: center; justify-content: center; gap: 0.7rem;
-            width: 100%; padding: 1rem 1.4rem; text-decoration: none;
-            font-family: var(--font-sans); font-size: 0.8rem; font-weight: 500;
-            letter-spacing: 0.2em; text-transform: uppercase;
-            color: #0a0a0a; background: linear-gradient(135deg, #e6c473 0%, var(--accent-gold) 100%);
-            box-shadow: 0 8px 28px -6px rgba(212,168,83,0.55);
-            transition: transform 0.25s, box-shadow 0.25s, filter 0.25s;
-        }
-        .book-popup-btn:hover, .book-popup-btn:focus-visible {
-            transform: translateY(-2px); filter: brightness(1.08);
-            box-shadow: 0 12px 34px -6px rgba(212,168,83,0.75); outline: none;
-        }
-        .book-popup-btn span { transition: transform 0.25s; }
-        .book-popup-btn:hover span { transform: translateX(4px); }
-        .book-popup-later {
-            display: inline-block; margin-top: 1rem; padding: 0.4rem 0.8rem;
-            background: none; border: none; cursor: pointer;
-            font-family: var(--font-sans); font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
-            color: var(--text-muted); transition: color 0.2s;
-        }
-        .book-popup-later:hover, .book-popup-later:focus-visible { color: var(--text-light); outline: none; }
-
-        @media (max-width: 480px) {
-            .book-popup { padding: 2.3rem 1.3rem 1.5rem; }
-            .book-popup-icon { width: 72px; height: 72px; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .book-popup-icon, .book-popup-icon::before { animation: none; }
-            #book-popup-overlay, .book-popup { transition: none; }
-        }
-    </style>
+</style>
 </head>
 <body>
 
@@ -2694,21 +2616,32 @@
 
         <!-- Center: Links -->
         <div class="nav-links">
-            <a href="biography.html">Biography</a>
-            <a href="humanitarian-work.html">Work</a>
-            <a href="#section-media" data-i18n="nav_videos">Videos</a>
-            <a href="#section-whatsapp" data-i18n="nav_message">Message</a>
+            <a href="./debook" class="nav-book-cta"><svg class="nav-ic" viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>Books</a>
             <a href="https://jobs.amriksinghspain.com" target="_blank" rel="noopener" class="nav-jobs-cta">
                 <svg class="nav-ic" viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>Jobs
             </a>
             <a href="https://property.amriksinghspain.com" target="_blank" rel="noopener" class="nav-prop-cta">
                 <svg class="nav-ic" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Properties
             </a>
-            <a href="#section-5" class="nav-help-cta" data-i18n="s5_cta" onclick="openHelpModal();return false;"><span class="nav-help-dot"></span>Humanitarian Help</a>
+            <!-- Everything else lives in this dropdown -->
+            <div class="nav-more" id="nav-more">
+                <button type="button" class="nav-more-btn" id="nav-more-btn" aria-haspopup="true" aria-expanded="false" onclick="toggleNavMore(event)">
+                    <span>More</span>
+                    <svg class="nav-more-caret" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+                </button>
+                <div class="nav-more-menu" id="nav-more-menu" role="menu">
+                    <a href="biography.html" role="menuitem">Biography</a>
+                    <a href="humanitarian-work.html" role="menuitem">Work</a>
+                    <a href="#section-media" role="menuitem" data-i18n="nav_videos" onclick="closeNavMore()">Videos</a>
+                    <a href="#section-whatsapp" role="menuitem" data-i18n="nav_message" onclick="closeNavMore()">Message</a>
+                    <a href="#section-5" role="menuitem" class="nav-help-cta" data-i18n="s5_cta" onclick="closeNavMore();openHelpModal();return false;"><span class="nav-help-dot"></span>Humanitarian Help</a>
+                </div>
+            </div>
         </div>
 
         <!-- Mobile-only: Jobs + Properties stay visible in the bar (not in the drawer) -->
         <div class="nav-mobile-cta">
+            <a href="./debook" class="nm-btn nm-book"><svg viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>Books</a>
             <a href="https://jobs.amriksinghspain.com" target="_blank" rel="noopener" class="nm-btn nm-jobs">
                 <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>Jobs
             </a>
@@ -3958,6 +3891,21 @@ const context = (need && need.value) ? need.value : (selectedHelpContext || 'Oth
   });
 }
 
+
+/* === NAV "MORE" DROPDOWN === */
+function closeNavMore(){
+  var w=document.getElementById('nav-more'), b=document.getElementById('nav-more-btn');
+  if(w) w.classList.remove('open'); if(b) b.setAttribute('aria-expanded','false');
+}
+function toggleNavMore(e){
+  if(e) e.stopPropagation();
+  var w=document.getElementById('nav-more'), b=document.getElementById('nav-more-btn');
+  var open=!w.classList.contains('open');
+  w.classList.toggle('open',open); b.setAttribute('aria-expanded',open?'true':'false');
+}
+document.addEventListener('click',function(e){var w=document.getElementById('nav-more'); if(w && !w.contains(e.target)) closeNavMore();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape') closeNavMore();});
+
 /* =============================================
    HAMBURGER MENU
 ============================================= */
@@ -4236,95 +4184,6 @@ function sendWhatsApp() {
   window.open(`https://wa.me/+34615465235?text=${encodeURIComponent(preview)}`, '_blank');
   return false;
 }
-</script>
-
-<!-- ===== READ THE BOOK POPUP ===== -->
-<div id="book-popup-overlay" aria-hidden="true" onclick="closeBookPopupOnOverlay(event)">
-    <div class="book-popup" role="dialog" aria-modal="true" aria-labelledby="book-popup-title">
-        <button class="book-popup-close" onclick="closeBookPopup()" aria-label="Close">&times;</button>
-
-        <div class="book-popup-icon" aria-hidden="true">
-            <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="bpCover" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0" stop-color="#1b4a70"/><stop offset="1" stop-color="#0a2233"/>
-                    </linearGradient>
-                </defs>
-                <path d="M14 18 L48 24 L82 18 L82 74 L48 80 L14 74 Z" fill="#050b11" opacity="0.6" transform="translate(0,4)"/>
-                <path d="M12 16 L48 22 L48 78 L12 72 Z" fill="url(#bpCover)" stroke="#D4A853" stroke-width="1.5" stroke-linejoin="round"/>
-                <path d="M84 16 L48 22 L48 78 L84 72 Z" fill="url(#bpCover)" stroke="#D4A853" stroke-width="1.5" stroke-linejoin="round"/>
-                <path d="M18 24 L44 28.5 M18 33 L44 37.5 M18 42 L44 46.5" stroke="#8fcdf0" stroke-width="1.2" opacity="0.55" stroke-linecap="round"/>
-                <path d="M78 24 L52 28.5 M78 33 L52 37.5 M78 42 L52 46.5" stroke="#8fcdf0" stroke-width="1.2" opacity="0.55" stroke-linecap="round"/>
-                <path d="M48 22 L48 78" stroke="#D4A853" stroke-width="1.5"/>
-                <circle cx="48" cy="58" r="6" fill="none" stroke="#D4A853" stroke-width="1.3"/>
-                <path d="M48 53 L48 63 M43 58 L53 58" stroke="#D4A853" stroke-width="1.1"/>
-            </svg>
-        </div>
-
-        <p class="book-popup-eyebrow">The Digital Book</p>
-        <h2 class="book-popup-title" id="book-popup-title">The Book of<br><em>Amrik Singh</em></h2>
-        <p class="book-popup-sub">Turn the pages of an interactive book — his story, his seva, his Timeless Duty. Free to read, right in your browser.</p>
-
-        <div class="book-popup-langs" aria-label="Available languages">
-            <span>ਪੰਜਾਬੀ</span><span>English</span><span>Español</span>
-        </div>
-
-        <a class="book-popup-btn" id="book-popup-cta" href="./debook" onclick="markBookPopupSeen()">Read the Book <span>→</span></a>
-        <button class="book-popup-later" onclick="closeBookPopup()">Maybe later</button>
-    </div>
-</div>
-
-<script>
-/* === READ THE BOOK POPUP === */
-(function() {
-    var KEY = 'book_popup_seen';
-    var overlay = document.getElementById('book-popup-overlay');
-    var shown = false, timer = null, lastFocus = null;
-
-    function langPickerOpen() {
-        var l = document.getElementById('lang-overlay');
-        if (!l) return false;
-        if (l.classList.contains('hidden') || l.classList.contains('fade-out')) return false;
-        return getComputedStyle(l).display !== 'none';
-    }
-    function seen() { try { return sessionStorage.getItem(KEY); } catch (e) { return null; } }
-    window.markBookPopupSeen = function() { try { sessionStorage.setItem(KEY, '1'); } catch (e) {} };
-
-    function open() {
-        if (shown || seen()) return;
-        if (langPickerOpen()) { schedule(); return; }
-        shown = true;
-        lastFocus = document.activeElement;
-        overlay.classList.add('open');
-        overlay.setAttribute('aria-hidden', 'false');
-        setTimeout(function() { var c = document.getElementById('book-popup-cta'); if (c) c.focus(); }, 500);
-    }
-    function schedule() {
-        clearTimeout(timer);
-        timer = setTimeout(open, langPickerOpen() ? 800 : 2500);
-    }
-
-    window.closeBookPopup = function() {
-        overlay.classList.remove('open');
-        overlay.setAttribute('aria-hidden', 'true');
-        markBookPopupSeen();
-        if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
-    };
-    window.closeBookPopupOnOverlay = function(e) { if (e.target === overlay) closeBookPopup(); };
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && overlay.classList.contains('open')) closeBookPopup();
-    });
-
-    if (!seen()) {
-        var lo = document.getElementById('lang-overlay');
-        if (lo && window.MutationObserver) {
-            new MutationObserver(function() { if (!langPickerOpen() && !shown) schedule(); })
-                .observe(lo, { attributes: true, attributeFilter: ['class', 'style'] });
-        }
-        if (document.readyState === 'complete') schedule();
-        else window.addEventListener('load', schedule);
-    }
-})();
 </script>
 
 <!-- ===== JOBS BOTTOM BANNER ===== -->
