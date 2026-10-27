@@ -2,7 +2,7 @@
    SERVICE WORKER — Amrik Singh PWA
    Strategy: Cache First for assets, Network First for HTML
 ============================================= */
-const CACHE_NAME = 'amrik-singh-v3';
+const CACHE_NAME = 'amrik-singh-v4';
 const STATIC_ASSETS = [
   './index.html',
   './liquid-glass.css',
